@@ -15,7 +15,8 @@ import Constants from "expo-constants";
 export default Home = () => {
   const [jobs, setJobs] = useState([]);
   const navigation = useNavigation();
-  const API_BASE_URL = Constants.expoConfig.extra.API_BASE_URL;
+  // const API_BASE_URL = Constants.expoConfig.extra.API_BASE_URL;
+  const API_BASE_URL = "http://192.168.22.31:5000";
 
   useEffect(() => {
     const fetchJobs = async () => {

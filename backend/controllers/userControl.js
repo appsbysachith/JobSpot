@@ -58,4 +58,29 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+const protect = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer")) {
+    return res.status(401).json({ msg: "No tokens provided" });
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.userId).select("password");
+    next();
+  } catch (err) {
+    console.error(err.message);
+    res.status(401).json({ msg: "Invalid token" });
+  }
+};
+
+const getMe = async (req, res) => {
+  res.status(200).json({
+    user: req.user,
+  });
+};
+
+module.exports = { registerUser, loginUser, protect, getMe };

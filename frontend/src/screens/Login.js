@@ -8,17 +8,17 @@ import {
   Pressable,
   Alert,
 } from "react-native";
-import Constants from "expo-constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default Login = ({ navigation }) => {
+const Login = ({ navigation }) => {
   const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const API_BASE_URL = Constants.expoConfig.extra.API_BASE_URL;
+  const API_BASE_URL = "http://192.168.22.31:5000"; // Change if IP updates
 
   const onLogin = async () => {
     if (!email || !password) {
-      Alert.alert("Please enter details");
+      Alert.alert("Please enter email and password");
       return;
     }
 
@@ -30,13 +30,25 @@ export default Login = ({ navigation }) => {
       });
 
       const data = await response.json();
+
       if (!response.ok) {
         Alert.alert("Login Failed", data.msg || "Invalid credentials");
-      } else {
-        Alert.alert("Login Success", data.msg);
-        // TODO: Save token if needed using AsyncStorage
-        navigation.replace("Home"); // navigate to Home screen
+        return;
       }
+
+      Alert.alert("Login Success", data.msg);
+
+      if (data.token) {
+        await AsyncStorage.setItem("token", data.token);
+      }
+
+      if (rememberMe) {
+        await AsyncStorage.setItem("rememberMe", "true");
+      } else {
+        await AsyncStorage.removeItem("rememberMe");
+      }
+
+      navigation.replace("Main");
     } catch (err) {
       console.error("Login error:", err);
       Alert.alert("Error", "Something went wrong");
@@ -86,10 +98,9 @@ export default Login = ({ navigation }) => {
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.googleButton}>
-        <Text style={styles.googleButtonText}> Sign in with Google</Text>
+        <Text style={styles.googleButtonText}>Sign in with Google</Text>
       </TouchableOpacity>
 
-      {/* Signup link */}
       <View style={styles.signup}>
         <Text style={{ color: "#524B6B" }}>Don’t have an account? </Text>
         <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
@@ -99,6 +110,8 @@ export default Login = ({ navigation }) => {
     </View>
   );
 };
+
+export default Login;
 
 const styles = StyleSheet.create({
   container: {

@@ -1,8 +1,11 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Profile() {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       {/* Profile Picture */}
@@ -29,10 +32,22 @@ export default function Profile() {
         <Text style={styles.optionText}>Saved Jobs</Text>
       </View>
 
-      <View style={styles.option}>
-        <Ionicons name="log-out-outline" size={24} color="#130160" />
-        <Text style={styles.optionText}>Logout</Text>
-      </View>
+      <TouchableOpacity
+        onPress={async () => {
+          try {
+            await AsyncStorage.removeItem("token"); // or whatever key you used
+            navigation.replace("Welcome");
+          } catch (error) {
+            console.error("Logout error:", error);
+            Alert.alert("Error logging out. Please try again.");
+          }
+        }}
+      >
+        <View style={styles.option}>
+          <Ionicons name="log-out-outline" size={24} color="#130160" />
+          <Text style={styles.optionText}>Logout</Text>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 }

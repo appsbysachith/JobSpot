@@ -44,7 +44,7 @@ export default function AllJobs() {
   // Fetch jobs from backend and apply filters if available
   const fetchJobs = async () => {
     try {
-      const response = await axios.get("http://192.168.217.31:5000/api/jobs");
+      const response = await axios.get("http://192.168.22.31:5000/api/jobs");
       setAllJobs(response.data);
 
       if (filter) {

@@ -15,7 +15,8 @@ export default Login = ({ navigation }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const API_BASE_URL = Constants.expoConfig.extra.API_BASE_URL;
+  // const API_BASE_URL = Constants.expoConfig.extra.API_BASE_URL;
+  const API_BASE_URL = "http://192.168.22.31:5000";
 
   const handleSignup = async () => {
     if (!name || !email || !password) {
@@ -39,7 +40,7 @@ export default Login = ({ navigation }) => {
         Alert.alert("Error", data.msg || "Registration failed");
       } else {
         Alert.alert("Success", data.msg || "Registered successfully");
-        navigation.replace("Home"); // navigate to Home after signup
+        navigation.replace("Main"); // navigate to Home after signup
       }
     } catch (error) {
       console.error("Signup error:", error);

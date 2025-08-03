@@ -27,7 +27,7 @@
     },
     "plugins": ["expo-font"],
     "extra": {
-      "API_BASE_URL": "http://192.168.79.31:5000"
+      "API_BASE_URL": "http://192.168.74.31:5000"
     }
   }
 }
