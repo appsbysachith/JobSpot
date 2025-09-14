@@ -7,28 +7,24 @@ export default Logout = () => {
     <View style={styles.container}>
       <Text style={styles.heading}>Settings</Text>
 
-      {/* Notification Toggle */}
       <View style={styles.settingRow}>
         <Feather name="bell" size={24} color="#524B6B" style={styles.icon} />
         <Text style={styles.label}>Notification</Text>
         <Switch />
       </View>
 
-      {/* Dark Mode Toggle */}
       <View style={styles.settingRow}>
         <Feather name="moon" size={24} color="#524B6B" style={styles.icon} />
         <Text style={styles.label}>Dark Mode</Text>
         <Switch />
       </View>
 
-      {/* Change Password */}
       <TouchableOpacity style={styles.settingRow}>
         <Feather name="lock" size={24} color="#524B6B" style={styles.icon} />
         <Text style={styles.label}>Change Password</Text>
         <Feather name="chevron-right" size={24} color="#aaa" />
       </TouchableOpacity>
 
-      {/* Logout */}
       <TouchableOpacity style={styles.settingRow}>
         <MaterialCommunityIcons
           name="logout"

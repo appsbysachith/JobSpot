@@ -18,6 +18,11 @@ const userSchema = new mongoose.Schema(
       required: true,
       minLength: 6,
     },
+    profileImage: {
+      type: String,
+      default: "",
+    },
+    savedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }],
   },
   { timestamps: true }
 );

@@ -5,33 +5,31 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Pressable,
   Alert,
 } from "react-native";
-import Constants from "expo-constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default Login = ({ navigation }) => {
-  const [rememberMe, setRememberMe] = useState(false);
+export default function Signup({ navigation }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // const API_BASE_URL = Constants.expoConfig.extra.API_BASE_URL;
-  const API_BASE_URL = "http://192.168.22.31:5000";
+  const API_BASE_URL = "http://localhost:5000";
 
   const handleSignup = async () => {
     if (!name || !email || !password) {
-      Alert.alert("please fill in all fields ");
+      Alert.alert("Please fill in all fields");
       return;
     }
-    console.log("Signup values", name, email, password);
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/users/register`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, email, password }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim().toLowerCase(),
+          password: password.trim(),
+        }),
       });
 
       const data = await response.json();
@@ -40,7 +38,12 @@ export default Login = ({ navigation }) => {
         Alert.alert("Error", data.msg || "Registration failed");
       } else {
         Alert.alert("Success", data.msg || "Registered successfully");
-        navigation.replace("Main"); // navigate to Home after signup
+
+        if (data.token) {
+          await AsyncStorage.setItem("token", data.token);
+        }
+
+        navigation.replace("Main");
       }
     } catch (error) {
       console.error("Signup error:", error);
@@ -79,26 +82,11 @@ export default Login = ({ navigation }) => {
         onChangeText={setPassword}
       />
 
-      <View style={styles.row}>
-        <Pressable
-          style={styles.checkboxContainer}
-          onPress={() => setRememberMe(!rememberMe)}
-        >
-          <View style={[styles.checkbox, rememberMe && styles.checked]} />
-          <Text style={styles.checkboxLabel}>Remember me</Text>
-        </Pressable>
-      </View>
-
-      <TouchableOpacity style={styles.loginButton} onPress={handleSignup}>
-        <Text style={styles.loginButtonText}>SIGN UP</Text>
+      <TouchableOpacity style={styles.signupButton} onPress={handleSignup}>
+        <Text style={styles.signupButtonText}>SIGN UP</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.googleButton}>
-        <Text style={styles.googleButtonText}> Sign up with Google</Text>
-      </TouchableOpacity>
-
-      {/* Signup link */}
-      <View style={styles.signup}>
+      <View style={styles.signin}>
         <Text style={{ color: "#524B6B" }}>Have an account? </Text>
         <TouchableOpacity onPress={() => navigation.pop()}>
           <Text style={styles.link}>Sign in</Text>
@@ -106,14 +94,14 @@ export default Login = ({ navigation }) => {
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
     paddingHorizontal: 28,
-    paddingTop: 80,
+    paddingTop: 100,
   },
   heading: {
     fontFamily: "DMSansBold",
@@ -125,79 +113,38 @@ const styles = StyleSheet.create({
     fontFamily: "DMSansRegular",
     fontSize: 14,
     color: "#524B6B",
-    marginBottom: 32,
+    marginBottom: 40,
   },
   input: {
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 12,
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: 16,
     fontSize: 16,
     marginBottom: 20,
     backgroundColor: "#F5F5F5",
     fontFamily: "DMSansRegular",
   },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 32,
-  },
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  checkbox: {
-    width: 18,
-    height: 18,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: "#aaa",
-    marginRight: 8,
-  },
-  checked: {
+  signupButton: {
     backgroundColor: "#130160",
-    borderColor: "#130160",
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    marginBottom: 24,
   },
-  checkboxLabel: {
-    fontFamily: "DMSansRegular",
-    color: "#524B6B",
+  signupButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontFamily: "DMSansBold",
+  },
+  signin: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
   link: {
     color: "#FCA34D",
     fontFamily: "DMSansBold",
-  },
-  loginButton: {
-    backgroundColor: "#130160",
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  loginButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontFamily: "DMSansBold",
-  },
-  googleButton: {
-    backgroundColor: "#4285F4",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 14,
-    borderRadius: 12,
-    marginBottom: 24,
-  },
-  googleButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontFamily: "DMSansBold",
-    marginLeft: 8,
-  },
-  signup: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
   },
 });

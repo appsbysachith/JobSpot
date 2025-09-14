@@ -1,41 +1,102 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import React, { useState, useCallback } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const API_BASE_URL = "http://localhost:5000";
 
 export default function Profile() {
   const navigation = useNavigation();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchUser = async () => {
+    try {
+      setLoading(true);
+      const token = await AsyncStorage.getItem("token");
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      const res = await fetch(`${API_BASE_URL}/api/users/me`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setUser(data.user);
+      } else {
+        console.error("Error:", data.msg);
+      }
+    } catch (err) {
+      console.error("Fetch user error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUser();
+    }, [])
+  );
+
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color="#130160" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      {/* Profile Picture */}
       <Image
-        source={{ uri: "https://i.pravatar.cc/150?img=12" }} // Sample avatar
+        source={{
+          uri: user?.profileImage || "https://i.pravatar.cc/150?img=12",
+        }}
         style={styles.avatar}
       />
 
-      {/* Name */}
-      <Text style={styles.name}>John Doe</Text>
-      <Text style={styles.email}>john.doe@example.com</Text>
+      <Text style={styles.name}>{user?.name || "No Name"}</Text>
+      <Text style={styles.email}>{user?.email || "No Email"}</Text>
 
-      {/* Divider */}
       <View style={styles.divider} />
 
-      {/* Buttons */}
-      <View style={styles.option}>
+      <TouchableOpacity
+        style={styles.option}
+        onPress={() => navigation.navigate("AccountSettings")}
+      >
         <Ionicons name="settings-outline" size={24} color="#130160" />
         <Text style={styles.optionText}>Account Settings</Text>
-      </View>
+      </TouchableOpacity>
 
-      <View style={styles.option}>
+      <TouchableOpacity
+        style={styles.option}
+        onPress={() => navigation.navigate("SavedJobs")}
+      >
         <Ionicons name="bookmark-outline" size={24} color="#130160" />
         <Text style={styles.optionText}>Saved Jobs</Text>
-      </View>
+      </TouchableOpacity>
 
       <TouchableOpacity
         onPress={async () => {
           try {
-            await AsyncStorage.removeItem("token"); // or whatever key you used
+            await AsyncStorage.removeItem("token");
             navigation.replace("Welcome");
           } catch (error) {
             console.error("Logout error:", error);
@@ -58,6 +119,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     paddingTop: 60,
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   avatar: {
     width: 100,

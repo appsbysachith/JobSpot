@@ -4,7 +4,7 @@ import * as Font from "expo-font";
 import AppNavigator from "./src/navigation/AppNavigator";
 import * as SplashScreen from "expo-splash-screen";
 
-SplashScreen.preventAutoHideAsync(); // wait until fonts are loaded
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -23,11 +23,11 @@ export default function App() {
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
-      await SplashScreen.hideAsync(); // hide splash only after fonts loaded
+      await SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
 
-  if (!fontsLoaded) return null; // don’t render app until fonts loaded
+  if (!fontsLoaded) return null;
 
   return (
     <View onLayout={onLayoutRootView} style={{ flex: 1 }}>

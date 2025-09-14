@@ -9,20 +9,13 @@ import {
   TouchableOpacity,
   Modal,
 } from "react-native";
-import DropDownPicker from "react-native-dropdown-picker";
+import { useNavigation } from "@react-navigation/native";
 
 export default function FilterScreen() {
+  const navigation = useNavigation();
+
   const [visible, setVisible] = useState(false);
   const [category, setCategory] = useState("Select a category");
-
-  const [open, setOpen] = useState(false);
-  const [location, setLocation] = useState(null);
-  const [locationItems, setLocationItems] = useState([
-    { label: "Colombo", value: "Colombo" },
-    { label: "Kandy", value: "Kandy" },
-    { label: "Mumbai", value: "Mumbai" },
-    { label: "Galle", value: "Galle" },
-  ]);
 
   const [minSalary, setMinSalary] = useState("");
   const [maxSalary, setMaxSalary] = useState("");
@@ -39,30 +32,42 @@ export default function FilterScreen() {
 
   const handleSendFilterData = () => {
     const filters = {
-      category,
-      location,
-      salaryRange: { min: minSalary, max: maxSalary },
+      title: "",
+      category: category !== "Select a category" ? category : null,
+      salaryRange: {
+        min: minSalary ? parseFloat(minSalary) : null,
+        max: maxSalary ? parseFloat(maxSalary) : null,
+      },
       jobType,
       workplace,
     };
-    console.log("Filters:", filters);
-    navigation.navigate("AllJobs", { filters });
+
+    navigation.navigate("Main", {
+      screen: "AllJobs",
+      params: { filter: filters },
+    });
   };
 
   const resetFilters = () => {
     setCategory("Select a category");
-    setLocation(null);
     setMinSalary("");
     setMaxSalary("");
     setJobType(null);
     setWorkplace(null);
   };
 
+  const handleClose = () => {
+    navigation.navigate("Main", { screen: "AllJobs" });
+  };
+
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
+        <Text style={styles.closeText}>Close</Text>
+      </TouchableOpacity>
+
       <Text style={styles.heading}>Filter</Text>
 
-      {/* Category */}
       <View style={styles.section}>
         <Text style={styles.label}>Category</Text>
         <Pressable style={styles.dropdown} onPress={() => setVisible(true)}>
@@ -88,27 +93,6 @@ export default function FilterScreen() {
         </Modal>
       </View>
 
-      {/* Location */}
-      <View style={styles.section}>
-        <Text style={styles.label}>Location</Text>
-        <DropDownPicker
-          placeholder="Select a location"
-          open={open}
-          value={location}
-          items={locationItems}
-          setOpen={setOpen}
-          setValue={setLocation}
-          setItems={setLocationItems}
-          zIndex={1000}
-          style={{
-            borderColor: "#ccc",
-            minHeight: 50,
-            marginBottom: open ? 200 : 0,
-          }}
-        />
-      </View>
-
-      {/* Salary */}
       <View style={styles.section}>
         <Text style={styles.label}>Salary</Text>
         <View style={styles.row}>
@@ -131,7 +115,6 @@ export default function FilterScreen() {
         </View>
       </View>
 
-      {/* Job Type */}
       <View style={styles.section}>
         <Text style={styles.label}>Job Type</Text>
         <View style={styles.row}>
@@ -157,7 +140,6 @@ export default function FilterScreen() {
         </View>
       </View>
 
-      {/* Workplace */}
       <View style={styles.section}>
         <Text style={styles.label}>Workplace Type</Text>
         <View style={styles.row}>
@@ -183,7 +165,6 @@ export default function FilterScreen() {
         </View>
       </View>
 
-      {/* Buttons */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.applyButton}
@@ -198,11 +179,21 @@ export default function FilterScreen() {
     </ScrollView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
     padding: 24,
+  },
+  closeButton: {
+    alignSelf: "flex-end",
+    marginBottom: 10,
+  },
+  closeText: {
+    fontSize: 16,
+    color: "#130160",
+    fontFamily: "DMSansBold",
   },
   heading: {
     fontSize: 24,
@@ -225,7 +216,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 10,
     fontSize: 14,
-    fontFamily: "DMSansRegular",
     color: "#333",
   },
   halfInput: {
@@ -248,7 +238,6 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 14,
     color: "#130160",
-    fontFamily: "DMSansRegular",
   },
   dropdown: {
     backgroundColor: "#F2F2F2",
@@ -258,7 +247,6 @@ const styles = StyleSheet.create({
   dropdownText: {
     fontSize: 14,
     color: "#999",
-    fontFamily: "DMSansRegular",
   },
   buttonContainer: {
     marginTop: 30,

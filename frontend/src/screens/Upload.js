@@ -13,18 +13,16 @@ import { AntDesign } from "@expo/vector-icons";
 export default Description = () => {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header: Company Logo + Job Title */}
       <View style={styles.header}>
         <TouchableOpacity>
           <Image
-            source={require("../../assets/logo.png")} // Replace with your logo
+            source={require("../../assets/logo.png")}
             style={styles.logo}
           />
         </TouchableOpacity>
         <Text style={styles.jobTitle}>UI/UX Designer</Text>
       </View>
 
-      {/* Upload CV Section */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Upload CV</Text>
         <Text style={styles.sectionText}>
@@ -37,7 +35,6 @@ export default Description = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Cover Letter Input */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Cover Letter</Text>
         <TextInput
@@ -50,7 +47,6 @@ export default Description = () => {
         />
       </View>
 
-      {/* Apply Button */}
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>APPLY NOW</Text>
       </TouchableOpacity>

@@ -11,16 +11,11 @@ import {
 export default Description = () => {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header: Company Logo + Job Title */}
       <View style={styles.header}>
-        <Image
-          source={require("../../assets/logo.png")} // replace with your logo
-          style={styles.logo}
-        />
+        <Image source={require("../../assets/logo.png")} style={styles.logo} />
         <Text style={styles.jobTitle}>Company name</Text>
       </View>
 
-      {/* Job Description */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>About company</Text>
         <Text style={styles.sectionText}>
@@ -31,7 +26,6 @@ export default Description = () => {
         </Text>
       </View>
 
-      {/* Job Details */}
       <View style={styles.details}>
         <Text style={styles.detailLabel}>Website</Text>
         <Text style={styles.detailValue}>link</Text>
@@ -46,7 +40,6 @@ export default Description = () => {
         <Text style={styles.detailValue}>California</Text>
       </View>
 
-      {/* Apply Button */}
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>BACK</Text>
       </TouchableOpacity>
